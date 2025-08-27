@@ -14,7 +14,7 @@ public class ActAdVo {
     private Date actAdStart;
     private Date actAdEnd;
     private Integer actAdFee;
-    private Date actadFeeEnd;
+    private Date actAdFeeEnd;
     private Integer fMemId;
     private Integer actId;
 }
