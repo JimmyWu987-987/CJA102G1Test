@@ -7,8 +7,8 @@ USE myProject;
 
 -- 刪除/建立 商店樣式
 DROP TABLE IF EXISTS STY;
-SET @@auto_increment_increment = 10;
-SET @@auto_increment_offset = 10;
+SET @@auto_increment_increment = 1;
+SET @@auto_increment_offset = 1;
 CREATE TABLE STY (
 	STY_NO tinyint NOT NULL AUTO_INCREMENT,
     STY_CSS_PATH varchar(300) NOT NULL,
@@ -34,10 +34,10 @@ CREATE TABLE F_MEM (
 
 INSERT INTO F_MEM (F_MEM_NAME,STY_NO) VALUES
 ('吳永志',NULL),
-('吳冠宏','20'),
-('郭惠民','10'),
-('孫叔均','30'),
-('陳柏炘','10');
+('吳冠宏','2'),
+('郭惠民','1'),
+('孫叔均','3'),
+('陳柏炘','1');
 
 
 -- 刪除/建立 小農類別商品
