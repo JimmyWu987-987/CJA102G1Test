@@ -1,14 +1,32 @@
 CREATE DATABASE IF NOT EXISTS myProject;
 USE myProject;
 
--- step1. 商店樣式 -> 小農會員 -> 小農商品類別 -> 小農商品 -> 商城廣告
--- step2. 一般會員 -> 商城訂單 -> 商城訂單明細
+-- 總共 31 個 Table
+
+-- step 1. 
+
+-- (1-1) 商店樣式 -> 小農會員（FK商品樣式編號）
+
+-- (1-2) 小農商品類別 -> 小農商品（FK商品類別編號）（FK小農會員編號）-> 商品圖片（FK商品編號）
+-- ps.「商城訂單」建立好才建「商城訂單明細」
+
+-- (1-3) 商城廣告（FK商品編號）（FK小農會員編號）
+-- ps.「一般會員」建立好才建「購物車」、「商品評論」、「檢舉表單」
+
+-- (1-4) 活動分類 -> 活動（FK小農會員編號）-> 活動分類明細（FK活動編號）（FK分類編號）
+
+-- (1-5) 活動照片（FK活動編號）-> 活動廣告（FK活動編號）（FK小農會員編號）
+
+-- (1-6) 場次（FK小農會員編號）
+-- ps.「一般會員」、「活動折價卷持有者明細」建立好才建「報名訂單」
+
+
 
 
 -- 刪除/建立 商店樣式
 DROP TABLE IF EXISTS STY;
-SET @@auto_increment_increment = 1;
-SET @@auto_increment_offset = 1;
+-- SET @@auto_increment_increment = 1;
+-- SET @@auto_increment_offset = 1;
 CREATE TABLE STY (
 	STY_NO tinyint NOT NULL AUTO_INCREMENT,
     STY_CSS_PATH varchar(300) NOT NULL,
@@ -20,11 +38,8 @@ INSERT INTO STY (STY_CSS_PATH) VALUES
 ('/css/style2.css'),
 ('/css/style3.css');
 
-
 -- 刪除/建立 小農會員
 DROP TABLE IF EXISTS F_MEM;
-SET @@auto_increment_increment = 1;
-SET @@auto_increment_offset = 1;
 CREATE TABLE F_MEM (
 	F_MEM_ID int NOT NULL AUTO_INCREMENT,
     F_MEM_NAME varchar(20) NOT NULL,
@@ -42,8 +57,6 @@ INSERT INTO F_MEM (F_MEM_NAME,STY_NO) VALUES
 
 -- 刪除/建立 小農類別商品
 DROP TABLE IF EXISTS PRODUCT_CATEGORY;
-SET @@auto_increment_increment = 1;
-SET @@auto_increment_offset = 1;
 CREATE TABLE PRODUCT_CATEGORY (
 	PRO_CATE_ID int NOT NULL AUTO_INCREMENT,
     PRO_CATE_NAME varchar(100) NOT NULL,
@@ -62,17 +75,14 @@ INSERT INTO PRODUCT_CATEGORY (PRO_CATE_NAME) VALUES
 ('花卉'),
 ('海鮮');
 
-
 -- 刪除/建立 小農商品
 DROP TABLE IF EXISTS PRODUCT;
-SET @@auto_increment_increment = 1;
-SET @@auto_increment_offset = 1;
 CREATE TABLE PRODUCT (
 	PRO_ID int NOT NULL AUTO_INCREMENT,
     PRO_CATE_ID int NOT NULL, -- FK
     F_MEM_ID int NOT NULL, -- FK
     PRO_NAME varchar(100) NOT NULL,
-    CONSTRAINT PRODUCT_PROID_KEY PRIMARY KEY (PRO_ID)
+    CONSTRAINT PRODUCT_PRO_ID_KEY PRIMARY KEY (PRO_ID)
 ) ENGINE InnoDB;
 
 INSERT INTO PRODUCT (PRO_CATE_ID, F_MEM_ID, PRO_NAME) VALUES
@@ -97,10 +107,42 @@ INSERT INTO PRODUCT (PRO_CATE_ID, F_MEM_ID, PRO_NAME) VALUES
 (10, 4, '生食級鮭魚'),   -- 海鮮
 (10, 5, '急速冷凍白蝦');
 
+
+-- 刪除/建立 商品圖片
+DROP TABLE IF EXISTS PRODUCT_IMAGE;
+CREATE TABLE PRODUCT_IMAGE (
+	PRO_IMG_ID int NOT NULL,
+    PRO_ID int NOT NULL, -- FK
+    PRO_IMG LONGBLOB DEFAULT NULL,
+    CONSTRAINT PRODUCT_IMAGE_PRO_IMG_ID_KEY PRIMARY KEY (PRO_IMG_ID)
+) ENGINE InnoDB;
+
+INSERT INTO PRODUCT_IMAGE (PRO_IMG_ID, PRO_ID, PRO_IMG) VALUES
+(1, 10, NULL),
+(2, 5, NULL),
+(3, 18, NULL),
+(4, 2, NULL),
+(5, 14, NULL),
+(6, 7, NULL),
+(7, 20, NULL),
+(8, 12, NULL),
+(9, 3, NULL),
+(10, 16, NULL),
+(11, 8, NULL),
+(12, 1, NULL),
+(13, 19, NULL),
+(14, 6, NULL),
+(15, 11, NULL),
+(16, 4, NULL),
+(17, 17, NULL),
+(18, 9, NULL),
+(19, 13, NULL),
+(20, 15, NULL);
+
+
+
 -- 刪除/建立 商城廣告
 DROP TABLE IF EXISTS PRO_AD;
-SET @@auto_increment_increment = 1;
-SET @@auto_increment_offset = 1;
 CREATE TABLE PRO_AD (
 	PRO_AD_REVID int NOT NULL AUTO_INCREMENT,
     PRO_ID int NOT NULL, -- FK
@@ -145,20 +187,99 @@ INSERT INTO PRO_AD (
 (18, 5, NULL, 0, '2025-08-22 14:30:00', '編輯中', NULL, NULL, '2025-10-10', '2025-11-10', 950, '2025-10-05'); -- 編輯中
 
 
+-- 刪除/建立 活動分類
+-- 刪除/建立 活動
+-- 刪除/建立 活動分類明細
+-- 刪除/建立 活動照片
+-- 刪除/建立 活動廣告
+-- 刪除/建立 場次
+
+
+
+
+
+
+-- step 2. 
+
+-- (2-1) 一般會員
+ 
+-- (2-2) 商品折價卷 -> 商品折價卷持有者明細（FK商品折價卷編號）（FK一般會員編號）
+
+-- (2-3) 商城訂單（FK一般會員編號）（FK商品折價卷持有者流水號） -> 商城訂單明細（FK訂單編號）（FK商品編號）
+
+-- (2-4) 購物車（FK一般會員編號）（FK商品編號） -> 檢舉表單(FK商品編號) -> 商品評論（FK商品編號）（FK一般會員編號）
+
+-- (2-5) 活動折價卷 -> 活動折價卷持有者明細（FK活動折價卷編號）（FK一般會員編號）
+
+-- (2-6) 報名訂單（FK場次編號）（FK一般會員編號）（FK活動折價卷持有者流水號）
+
+-- (2-7) 商品收藏清單（FK一般會員編號）（FK商品編號） -> 活動收藏清單（FK一般會員編號）（FK活動編號）
+
+
+-- 刪除/建立 一般會員
+DROP TABLE IF EXISTS MEM;
+CREATE TABLE MEM (
+	MEM_ID int NOT NULL AUTO_INCREMENT,
+    MEM_NAME varchar(20) NOT NULL,
+    CONSTRAINT MEM_ID_KEY PRIMARY KEY (MEM_ID)
+) ENGINE InnoDB;
+
+-- 刪除/建立 商品折價卷
+-- 刪除/建立 商品折價卷持有者明細
+-- 刪除/建立 商城訂單
+-- 刪除/建立 商城訂單明細
+-- 刪除/建立 購物車
+-- 刪除/建立 檢舉表單
+-- 刪除/建立 商品評論
+-- 刪除/建立 活動折價卷
+-- 刪除/建立 活動折價卷持有者明細
+-- 刪除/建立 報名訂單
+-- 刪除/建立 商品收藏清單
+-- 刪除/建立 活動收藏清單
+
+
+
+
+
+
+
+-- step 3. 
+-- (3-1) 最新消息清單
+
+-- (3-2) 常見QA清單
+
+-- (3-2) 管理員職稱表 -> 管理員（FK職稱編號） -> 功能權限 -> 角色權限（FK職稱編號）（FK權限編號）
+
+
+-- 最新消息清單
+-- 常見QA清單
+-- 管理員職稱表
+-- 管理員
+-- 功能權限
+-- 角色權限
+
+
+
+
+
+-- step1.
 -- 建立 FK
--- 小農會員 FK 商店樣式
+-- 小農會員 FK 商店樣式編號
 ALTER TABLE F_MEM
 ADD CONSTRAINT F_MEM_STY_FK FOREIGN KEY (STY_NO) REFERENCES STY(STY_NO);
--- 小農商品 FK 小農類別商品
+-- 小農商品 FK 商品類別編號
 ALTER TABLE PRODUCT
 ADD CONSTRAINT PRODUCT_PRODUCT_CATEGORY_FK FOREIGN KEY (PRO_CATE_ID) REFERENCES PRODUCT_CATEGORY(PRO_CATE_ID);
--- 小農商品 FK 小農會員
+-- 小農商品 FK 小農編號
 ALTER TABLE PRODUCT
 ADD CONSTRAINT PRODUCT_F_MEM_FK FOREIGN KEY (F_MEM_ID) REFERENCES F_MEM(F_MEM_ID);
--- 商城廣告 FK 小農商品
+-- 商品圖片 FK 商品編號
+ALTER TABLE PRODUCT_IMAGE
+ADD CONSTRAINT PPRODUCT_IMAGE_PRODUCT_FK FOREIGN KEY (PRO_ID) REFERENCES PRODUCT(PRO_ID);
+-- 商城廣告 FK 商品編號
 ALTER TABLE PRO_AD
 ADD CONSTRAINT PRO_AD_REVID_PRO_ID_FK FOREIGN KEY (PRO_ID) REFERENCES PRODUCT(PRO_ID);
--- 商城廣告 FK 小農會員
+-- 商城廣告 FK 小農會員編號
 ALTER TABLE PRO_AD
 ADD CONSTRAINT PRO_AD_F_MEM_ID_FK FOREIGN KEY (F_MEM_ID) REFERENCES F_MEM(F_MEM_ID);
 
