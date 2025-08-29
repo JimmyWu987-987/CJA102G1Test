@@ -1,3 +1,7 @@
+/* 剩 ses 的假資料未建完, 8/30會再更新 */
+/* 我預計是活動欄位有正常上架的3個活動各至少用兩筆，但會有 "不成團，取消"、"場次異動"、"成團" 之類不同的狀況 */
+
+
 create database if not exists xxxx; /*schemas名稱*/
 use xxxx; /*schemas名稱*/
 
@@ -13,8 +17,8 @@ create table actcate (
  actcate_name		varchar(10),
  constraint actcate_actcate_id_pk primary key (actcate_id));
 
-insert into actcate values (1,'動物互動'), (2,'手做點心'), (3,'親子同樂');
-
+insert into actcate values (1,'農事體驗'), (2,'食農教育'), (3,'親子同樂'), (4, '動物互動'), (5, '手作工藝'),
+						   (6, '戶外體驗'), (7, '導覽活動'), (8, '季節限定'), (9, '其它');
 
 
 create table act (
@@ -35,9 +39,36 @@ create table act (
  constraint act_f_mem_id_fk foreign key (f_mem_id) references f_mem (f_mem_id),
  constraint act_act_id_pk primary key (act_id));
 
-insert into act values (1, '採茶體驗', '2025-08-30','2025-12-30',
-'走進茶園，親身感受大自然的氣息！在專業茶農的帶領下，您將學習分辨茶葉的嫩芽與成熟葉，體驗手工採茶的樂趣。除了親手採摘新鮮茶菁，還能參與製茶的簡單步驟，從揉捻到聞香，了解一杯好茶背後的用心。活動中更提供品茗時光，讓您即刻品嚐自己親手採製的清香茶湯。這不僅是一場體驗，更是一次與土地、文化連結的旅程。',
- 500, 2, '2025-08-20 10:20:30', null, 1, '2025-08-21 09:20:30', 1, 1, 9, 2);
+insert into act values
+ (null, '下田去！一日小農體驗', '2025-07-01','2025-12-30',
+ '捲起袖子、赤腳踩在田裡，親手插秧、採收蔬果，感受最真實的農村日常。', 200,
+ 2, '2025-05-10 10:20:30', null,
+ 1, '2025-05-15 09:20:30',
+ 1, 101, 23), /*到目前都正常上架&有人評價過*/
+ 
+ (null, '從產地到餐桌的秘密', '2025-10-25','2026-03-31',
+ '透過遊戲與教學，讓大小朋友了解食材來源，培養珍惜食物的心。', 10000,
+ 3, '2025-08-26 08:20:00', '報名費用有疑慮，請再次確認。',
+ null, null,
+ 3, null, null), /*審核未過*/
+ 
+ (null, '小小牧場', '2025-03-15','2025-10-31',
+ '餵小羊、抱兔子，近距離接觸可愛動物，體驗牧場生活樂趣。', 399,
+ 2, '2025-01-10 14:10:30', null,
+ 1, '2025-01-15 16:00:30',
+ 2, 168, 38), /*到目前都正常上架&有人評價過*/
+ 
+ (null, '藍染工藝體驗課程', '2024-12-01','2025-06-10',
+ '親手體驗藍染工藝，學習天然染色技巧，創作獨一無二的布藝作品。', 700,
+ 2, '2024-10-27 19:10:30', '已修正金額，審核通過',
+ 0, '2025-06-11 00:00:00',
+ 2, 666, 150), /*有人評價過此活動, 此活動已結束並下架*/
+ 
+ (null, '小村莊的故事之旅', '2025-10-01','2026-02-28',
+ '在導覽老師帶領下，認識農村的歷史、風俗與文化典故。', 299,
+ 2, '2025-08-28 10:20:30', null,
+ 0, null,
+ 1, null, null); /*審核已通過但還沒上架*/
 
 
 create table actimg (
@@ -47,18 +78,22 @@ create table actimg (
  constraint actimg_act_id_fk foreign key (act_id) references act (act_id),
  constraint actimg_actimg_id_pk primary key (actimg_id));
 
-insert into actimg (act_id) values (null, null, 1);
+insert into actimg values (null, null, 1), (null, null, 1), (null, null, 1),
+						  (null, null, 3), (null, null, 3);
 
 
 create table actcate_list (
- actcate_list_id	int not null auto_increment,
  act_id				int	not null,
  actcate_id			int not null,
  constraint actcate_list_act_id_fk foreign key (act_id) references act (act_id),
  constraint actcate_list_actcate_id_fk foreign key (actcate_id) references actcate (actcate_id),
- constraint actcate_list_actcate_list_id_pk primary key (actcate_list_id));
+ constraint actcate_list_act_id_actcate_id_pk primary key (act_id, actcate_i));
  
- insert into actcate_list values (1, 1, 1);
+ insert into actcate_list values (1, 1), (1, 3), (1, 6),
+								 (2, 2), (2, 3),
+                                 (3, 3), (3, 4), (3, 6), (3, 7),
+                                 (4, 3), (4, 5),
+                                 (5, 3), (5, 6), (5, 7);
 
 
 create table ses (
@@ -73,13 +108,39 @@ create table ses (
  ses_fee			int not null,
  notice				int not null default 1,
  ses_launstat		tinyint not null default 0,
- reg_stat			tinyint not null default 0,
  ses_launupd		datetime,
+ reg_stat			tinyint not null default 0,
  headcount			int default 0,
  act_id				int not null,
  constraint ses_act_id_fk foreign key (act_id) references act (act_id),
  constraint ses_ses_id_pk primary key (ses_id));
 
-insert into ses values (1, '2025-10-10', '14:00', '15:30', '2025-09-05', '2025-10-05', 5, 20, 500, 3, 1, 0, '2025-09-15 14:10:09', 10, 1);
+/* (ses_id, ses_date, ses_start, ses_end,
+   reg_start, reg_end
+   minppl, maxppl
+   ses_fee, notice
+   ses_launstat, ses_launupd
+   reg_stat, headcount, act_id)*/
+
+insert into ses values (null, '2025-08-08', '15:00', '17:30',
+						'2025-07-01', '2025-08-01',
+                        5, 20,
+                        230, 3,
+                        0, '2025-08-08 17:30:00',
+                        5, 18, 1), /*圓滿結束*/
+                        
+                        (null, '2025-10-10', '14:00', '16:30',
+						'2025-08-25', '2025-10-01',
+                        5, 20,
+                        200, 3,
+                        1, '2025-08-01 14:10:09',
+                        1, 10, 1), /*還在報名中*/
+                        
+                        (null, '2025-03-20', '10:30', '11:30',
+						'2025-01-20', '2025-03-10',
+                        5, 15,
+                        399, 2,
+                        2, '2025-03-10 00:00:00',
+                        2, 3, 3); /*不成團, 取消*/
 
 commit;
