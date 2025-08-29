@@ -242,7 +242,6 @@ CREATE TABLE MEM (
 
 
 
-
 -- step 3. 
 -- (3-1) 最新消息清單
 
