@@ -236,7 +236,7 @@ CREATE TABLE mem_act_cpn (
 INSERT INTO mem_act_cpn
 (act_cpn_id, mem_id, cpn_use_status, rcv_at, eff_start, eff_end, used_at)
 VALUES
--- 未使用（有效中）
+-- 未使用（有效中）--
 (1, 1, 0, DATE_SUB(NOW(), INTERVAL 10 DAY), '2025-08-20', '2025-09-20', NULL),
 (2, 2, 0, DATE_SUB(NOW(), INTERVAL 5 DAY), '2025-08-25', '2025-09-25', NULL),
 
