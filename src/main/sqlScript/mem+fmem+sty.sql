@@ -58,11 +58,11 @@ CREATE TABLE f_mem (
 	bank_code varchar(5) NOT NULL,
 	bank_acc varchar(20) NOT NULL,
 	f_mem_reg_date datetime NOT NULL,
+	certi_status tinyint NOT NULL DEFAULT 0,
 	f_mem_pic longblob DEFAULT NULL,
 	organic_pic longblob DEFAULT NULL,
 	land_pic longblob DEFAULT NULL,
 	insur_pic longblob DEFAULT NULL,
-	certi_status tinyint NOT NULL DEFAULT 0,
 	store_pic longblob DEFAULT NULL,
 	store_name varchar(50) DEFAULT NULL,
 	store_intro varchar(500) DEFAULT NULL,
@@ -75,18 +75,20 @@ CREATE TABLE f_mem (
 	prod_fee int DEFAULT NULL
 );
 
-INSERT INTO f_mem (f_id, f_mem_acc, f_mem_pwd, f_mem_name, f_mem_mobile, f_mem_email, f_mem_zipcode, f_mem_city, 
-				   f_mem_dist, f_mem_addr, bank_code, bank_acc, f_mem_reg_date) VALUES
-('H237230756', 'user001', 'pwd12345', '王小明', '0912-345678', 'user001@example.com', '10001', '台北市', '中正區', '仁愛路一段100號', '004', '1234567890123456', '2024-05-01 10:00:00'),
-('A182893231', 'user002', 'pwd12345', '林小美', '0922-333444', 'user002@example.com', '10002', '新北市', '板橋區', '文化路200號', '822', '2233445566778899', '2024-05-02 11:00:00'),
-('A119254857', 'user003', 'pwd12345', '陳大華', '0933-445566', 'user003@example.com', '10003', '台中市', '西屯區', '市政路300號', '700', '3344556677889900', '2024-05-03 12:00:00'),
-('E118270271', 'user004', 'pwd12345', '張美麗', '0955-667788', 'user004@example.com', '10004', '高雄市', '苓雅區', '光華路88號', '012', '4455667788990011', '2024-05-04 13:00:00'),
-('F133927325', 'user005', 'pwd12345', '吳志強', '0966-778899', 'user005@example.com', '22001', '台南市', '東區', '東門路199號', '005', '5566778899001122', '2024-05-05 14:00:00'),
-('J179726256', 'user006', 'pwd12345', '葉志豪', '0977-889900', 'user006@example.com', '10006', '新竹市', '東區', '關新路300號', '822', '6677889900112233', '2024-05-06 15:00:00'),
-('L158944504', 'user007', 'pwd12345', '簡文君', '0911-222333', 'user007@example.com', '10007', '基隆市', '仁愛區', '忠孝路18號', '004', '7788990011223344', '2024-05-07 16:00:00'),
-('M160270421', 'user008', 'pwd12345', '朱庭瑜', '0933-777888', 'user008@example.com', '10008', '桃園市', '中壢區', '中山路350號', '012', '8899001122334455', '2024-05-08 17:00:00'),
-('N108676213', 'user009', 'pwd12345', '劉家豪', '0922-111333', 'user009@example.com', '10009', '宜蘭縣', '宜蘭市', '民權路68號', '700', '9900112233445566', '2024-05-09 18:00:00'),
-('Q193833164', 'user010', 'pwd12345', '黃靜怡', '0966-111222', 'user010@example.com', '10010', '花蓮縣', '花蓮市', '和平路88號', '005', '0011223344556677', '2024-05-10 19:00:00');
+INSERT INTO f_mem (f_id, f_mem_acc, f_mem_pwd, f_mem_acc_status, f_mem_acc_desc, f_mem_name, f_mem_mobile, f_mem_tel, f_mem_email,
+				   f_mem_zipcode, f_mem_city, f_mem_dist, f_mem_addr,  bank_code, bank_acc, f_mem_reg_date, 
+				   certi_status, f_mem_pic, organic_pic, land_pic, insur_pic, store_pic, store_name, store_intro, sty_no, 
+				   mkt_score, mkt_cnt, act_score, act_cnt, rpt_cnt, prod_fee) VALUES
+('H237230756', 'user001', 'pwd12345', 0, NULL, '王小明', '0912-345678', NULL, 'user001@example.com', '10001', '台北市', '中正區', '仁愛路一段100號', '004', '1234567890123456', '2024-05-01 10:00:00', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+('A182893231', 'user002', 'pwd12345', 0, NULL, '林小美', '0922-333444', NULL, 'user002@example.com', '10002', '新北市', '板橋區', '文化路200號', '822', '2233445566778899', '2024-05-02 11:00:00', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+('A119254857', 'user003', 'pwd12345', 0, NULL, '陳大華', '0933-445566', NULL, 'user003@example.com', '10003', '台中市', '西屯區', '市政路300號', '700', '3344556677889900', '2024-05-03 12:00:00', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+('E118270271', 'user004', 'pwd12345', 0, NULL, '張美麗', '0955-667788', NULL, 'user004@example.com', '10004', '高雄市', '苓雅區', '光華路88號', '012', '4455667788990011', '2024-05-04 13:00:00', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+('F133927325', 'user005', 'pwd12345', 0, NULL, '吳志強', '0966-778899', NULL, 'user005@example.com', '22001', '台南市', '東區', '東門路199號', '005', '5566778899001122', '2024-05-05 14:00:00', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+('J179726256', 'user006', 'pwd12345', 0, NULL, '葉志豪', '0977-889900', NULL, 'user006@example.com', '10006', '新竹市', '東區', '關新路300號', '822', '6677889900112233', '2024-05-06 15:00:00', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+('L158944504', 'user007', 'pwd12345', 0, NULL, '簡文君', '0911-222333', NULL, 'user007@example.com', '10007', '基隆市', '仁愛區', '忠孝路18號', '004', '7788990011223344', '2024-05-07 16:00:00', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+('M160270421', 'user008', 'pwd12345', 0, NULL, '朱庭瑜', '0933-777888', NULL, 'user008@example.com', '10008', '桃園市', '中壢區', '中山路350號', '012', '8899001122334455', '2024-05-08 17:00:00', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+('N108676213', 'user009', 'pwd12345', 0, NULL, '劉家豪', '0922-111333', NULL, 'user009@example.com', '10009', '宜蘭縣', '宜蘭市', '民權路68號', '700', '9900112233445566', '2024-05-09 18:00:00', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+('Q193833164', 'user010', 'pwd12345', 0, NULL, '黃靜怡', '0966-111222', NULL, 'user010@example.com', '10010', '花蓮縣', '花蓮市', '和平路88號', '005', '0011223344556677', '2024-05-10 19:00:00', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- ================================================================
 
