@@ -62,7 +62,7 @@ INSERT INTO administrator (admin_type_id, admin_acc, admin_pwd, admin_status, ad
 (2, 'admin2', 'pwd456', 1, '李四', 'admin2@email.com', '0912345679'),
 (3, 'admin3', 'pwd789', 0, '王五', 'admin3@email.com', '0912345680');
 
--- 功能權限表--
+-- 功能權限表 --
 
 CREATE TABLE admin_function (
 	admin_func_id INT NOT NULL PRIMARY KEY,
