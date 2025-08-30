@@ -11,7 +11,7 @@ INSERT INTO news (news_title, news_cont, news_at) VALUES
 ('網站更新', '我們的網站已經更新至最新版本，提供更好的使用者體驗。', '2024-05-20 10:30:00'),
 ('夏季特賣會', '所有商品8折優惠，只到月底！', '2024-06-01 15:00:00');
 
--- 小農商品--
+-- 小農商品 --
 
 CREATE TABLE product (
 	pro_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -43,7 +43,7 @@ INSERT INTO admin_type (admin_type_id, admin_type_name) VALUES
 (2, '中級管理員'),
 (3, '低級人員');
 
--- 管理員--
+-- 管理員 --
 
 CREATE TABLE administrator (
 	admin_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -75,7 +75,7 @@ INSERT INTO admin_function (admin_func_id, admin_func_name, admin_func_des) VALU
 (2, '商城管理', '查看、處理商城商品'),
 (3, '活動管理', '查看、管理活動資料');
 
--- 角色權限表--
+-- 角色權限表 --
 
 CREATE TABLE admin_type_func_list (
 	admin_type_id INT NOT NULL,  -- FK測試用先放 --
