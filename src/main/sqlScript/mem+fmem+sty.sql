@@ -37,7 +37,6 @@ INSERT INTO mem (mem_acc, mem_pwd, mem_name, mem_mobile, mem_email, mem_zipcode,
 ('member009', 'pass1234', '邱柏睿', '0911000222', 'member009@example.com', '60001', '嘉義市', '西區', '垂楊路120號', '2024-06-09 18:00:00'),
 ('member010', 'pass1234', '簡心怡', '0922000333', 'member010@example.com', '54001', '南投縣', '南投市', '中興路300號', '2024-06-10 19:00:00');
        
--- ================================================================
 
 DROP TABLE IF EXISTS f_mem;
 CREATE TABLE f_mem (
