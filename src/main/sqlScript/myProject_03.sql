@@ -675,7 +675,7 @@ CREATE TABLE shopping_cart(
 	mem_id INT NOT NULL, -- pk.fk
 	pro_id INT NOT NULL, -- pk.fk
 	cart_amount INT NOT NULL DEFAULT 1,
-	CONSTRAINT shopping_cart_mem_id_mem_id_pk PRIMARY KEY (mem_id,pro_id)
+	CONSTRAINT shopping_cart_mem_id_pro_id_pk PRIMARY KEY (mem_id,pro_id)
 )ENGINE InnoDB;
 
 INSERT INTO shopping_cart (mem_id, pro_id, cart_amount) VALUES
@@ -711,9 +711,79 @@ INSERT INTO shopping_cart (mem_id, pro_id, cart_amount) VALUES
 (9, 15, 1);
 
 
-
 -- 刪除/建立 檢舉表單
+DROP TABLE IF EXISTS pro_report;
+CREATE TABLE pro_report(
+	pro_rpt_id INT NOT NULL AUTO_INCREMENT,
+	pro_id INT NOT NULL, -- FK
+	mem_id INT NOT NULL, -- FK
+	pro_rpt_status TINYINT NOT NULL,
+	pro_rpt_at DATETIME NOT NULL,
+	pro_rpt_title VARCHAR(50) NOT NULL,
+	pro_rpt_cont VARCHAR(1000) NOT NULL,
+	CONSTRAINT pro_report_pro_rpt_id_pk PRIMARY KEY (pro_rpt_id)
+)ENGINE InnoDB;
+
+INSERT INTO pro_report (pro_id, mem_id, pro_rpt_status, pro_rpt_at, pro_rpt_title, pro_rpt_cont) VALUES
+(20, 15, 1, '2025-08-28 10:14:00', '商品描述不符', '購買的商品與網站上的圖片和描述差異太大，實際收到品質較差。'),
+(1, 1, 3, '2025-08-29 14:30:00', '價格不合理', '該商品在其他地方價格遠低於此處，懷疑有不當抬價行為。'),
+(10, 12, 0, '2025-09-01 09:00:00', '重複上架', '這項商品疑似被重複上架，請協助確認。'),
+(7, 18, 2, '2025-09-02 16:20:00', '商品為仿冒品', '收到的商品標示不清，懷疑為非正版商品。'),
+(13, 10, 1, '2025-09-03 11:45:00', '內容涉及不當言論', '商品介紹內容含有攻擊性或不雅文字，應予下架。');
+
 -- 刪除/建立 商品評論
+DROP TABLE IF EXISTS pro_com;
+CREATE TABLE pro_com(
+	pro_com_id INT NOT NULL AUTO_INCREMENT,
+	pro_id INT NOT NULL, -- FK
+	mem_id INT NOT NULL, -- FK
+	pro_com_content VARCHAR(500) DEFAULT NULL,
+	pro_com_time DATETIME DEFAULT NULL,
+	pro_com_rate TINYINT NOT NULL,
+    CONSTRAINT pro_com_pro_com_id_pk PRIMARY KEY (pro_com_id)
+)ENGINE InnoDB;
+
+INSERT INTO pro_com (pro_id, mem_id, pro_com_content, pro_com_time, pro_com_rate) VALUES
+(1, 1, '高麗菜很新鮮，口感清脆，家人都說讚！', '2025-08-01 10:30:00', 5),
+(1, 15, '包裝很完整，運送快速，服務非常好。', '2025-08-03 14:00:00', 4),
+(1, 19, '好吃！下次會再回購。', '2025-08-05 18:20:00', 5),
+(2, 2, '小黃瓜很翠綠，沒有農藥味，吃得很安心。', '2025-08-02 11:45:00', 5),
+(2, 17, '品質很好，物超所值。', '2025-08-04 09:30:00', 4),
+(3, 3, '蘋果香甜多汁，很適合打成果汁或直接吃。', '2025-08-03 16:10:00', 5),
+(4, 4, '香蕉熟度剛好，甜而不膩，小朋友很喜歡。', '2025-08-05 12:55:00', 4),
+(4, 1, '出貨速度快，包裝得很仔細，沒有碰撞。', '2025-08-06 17:30:00', 5),
+(5, 5, '米飯粒粒分明，口感很好，煮出來的飯特別香。', '2025-08-06 15:00:00', 5),
+(5, 12, '米質優良，會繼續支持。', '2025-08-08 08:00:00', 5),
+(5, 13, '送貨很準時，包裝保護得很好。', '2025-08-09 11:20:00', 4),
+(6, 6, '米飯香甜，CP值很高。', '2025-08-07 10:40:00', 4),
+(7, 7, '茶葉香氣濃郁，泡出來的茶很回甘。', '2025-08-08 13:25:00', 5),
+(7, 2, '送禮自用兩相宜。', '2025-08-09 15:00:00', 5),
+(7, 10, '茶葉很耐泡，值得推薦。', '2025-08-10 18:00:00', 4),
+(8, 8, '紅茶味道很棒，很順口。', '2025-08-09 16:50:00', 4),
+(8, 20, '品質穩定，是日常的好選擇。', '2025-08-11 12:30:00', 5),
+(9, 9, '香菇很厚實，香氣十足，煮湯很美味。', '2025-08-10 19:15:00', 5),
+(9, 11, '乾燥香菇品質優良，泡發後很飽滿。', '2025-08-12 10:00:00', 5),
+(10, 10, '杏鮑菇很新鮮，簡單料理就很好吃。', '2025-08-11 14:00:00', 4),
+(10, 16, '菇類品質很棒，會再回購。', '2025-08-13 14:00:00', 4),
+(11, 1, '龍眼蜜很純，有獨特的香氣。', '2025-08-12 11:30:00', 5),
+(11, 4, '很棒的產品，值得支持小農。', '2025-08-14 11:00:00', 5),
+(12, 2, '百花蜜味道豐富，很適合泡檸檬水。', '2025-08-13 16:00:00', 4),
+(13, 3, '雞蛋品質很好，蛋黃很飽滿。', '2025-08-14 10:00:00', 5),
+(13, 6, '放牧雞蛋吃得安心，價格也很實惠。', '2025-08-15 16:00:00', 5),
+(13, 8, '蛋很新鮮，品質有保證。', '2025-08-16 11:00:00', 5),
+(13, 11, '包裝很仔細，收到沒有破裂。', '2025-08-17 14:00:00', 4),
+(14, 4, '紅蘿蔔很甜，沒有怪味，小朋友也愛吃。', '2025-08-15 13:00:00', 4),
+(15, 5, '鳳梨香甜，果肉多汁，新鮮。', '2025-08-16 17:00:00', 5),
+(16, 6, '糙米口感Q彈，很健康。', '2025-08-17 10:00:00', 4),
+(16, 12, '米很香，品質很好。', '2025-08-18 13:00:00', 4),
+(17, 7, '包種茶很清香，回沖很多次都還有味道。', '2025-08-18 15:30:00', 5),
+(17, 19, '茶葉包裝很精美，送禮很有面子。', '2025-08-19 12:00:00', 5),
+(18, 8, '黑木耳很脆，品質優良。', '2025-08-19 18:00:00', 4),
+(19, 9, '芭樂很甜，口感清脆。', '2025-08-20 10:30:00', 4),
+(19, 15, '新鮮又好吃，值得推薦。', '2025-08-21 15:00:00', 5),
+(20, 10, '小番茄很甜，很像水果，當零食吃很棒。', '2025-08-21 11:00:00', 5),
+(20, 18, '小番茄品質穩定，每次買都很好吃。', '2025-08-22 17:00:00', 5);
+
 -- 刪除/建立 活動折價卷
 -- 刪除/建立 活動折價卷持有者明細
 -- 刪除/建立 報名訂單
@@ -734,6 +804,18 @@ INSERT INTO shopping_cart (mem_id, pro_id, cart_amount) VALUES
 
 
 -- 最新消息清單
+CREATE TABLE news (
+	news_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	news_title VARCHAR(50) NOT NULL,
+	news_cont VARCHAR(1000) NOT NULL,
+	news_at DATETIME NOT NULL
+);
+
+INSERT INTO news (news_title, news_cont, news_at) VALUES
+('網站更新', '我們的網站已經更新至最新版本，提供更好的使用者體驗。', '2024-05-20 10:30:00'),
+('夏季特賣會', '所有商品8折優惠，只到月底！', '2024-06-01 15:00:00');
+
+
 -- 常見QA清單
 -- 管理員職稱表
 -- 管理員
@@ -791,9 +873,15 @@ ADD CONSTRAINT pro_order_item_pro_order_fk FOREIGN KEY (pro_ord_id) REFERENCES p
 ALTER TABLE shopping_cart
 ADD CONSTRAINT shopping_cart_mem_fk FOREIGN KEY (mem_id) REFERENCES mem(mem_id),
 ADD CONSTRAINT shopping_cart_product_fk FOREIGN KEY (pro_id) REFERENCES product(pro_id);
-
--- 檢舉表單(FK商品編號)
+-- 檢舉表單(FK商品編號)(FK一般會員編號)
+ALTER TABLE pro_report
+ADD CONSTRAINT pro_report_product_fk FOREIGN KEY (pro_id) REFERENCES product(pro_id),
+ADD CONSTRAINT pro_report_mem_fk FOREIGN KEY (mem_id) REFERENCES mem(mem_id);
 -- 商品評論（FK商品編號）（FK一般會員編號）
+ALTER TABLE pro_com
+ADD CONSTRAINT pro_com_product_fk FOREIGN KEY (pro_id) REFERENCES product(pro_id),
+ADD CONSTRAINT pro_com_mem_fk FOREIGN KEY (mem_id) REFERENCES mem(mem_id);
+
 
 -- (2-5) 活動折價卷
 -- 活動折價卷持有者明細（FK活動折價卷編號）（FK一般會員編號）
