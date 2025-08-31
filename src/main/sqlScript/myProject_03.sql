@@ -427,10 +427,291 @@ INSERT INTO mem (mem_acc, mem_pwd, mem_name, mem_mobile, mem_email, mem_zipcode,
 ('member010', 'pass1234', '簡心怡', '0922000333', 'member010@example.com', '54001', '南投縣', '南投市', '中興路300號', '2024-06-10 19:00:00');
 
 -- 刪除/建立 商品折價卷
+DROP TABLE IF EXISTS pro_cpn;
+CREATE TABLE pro_cpn(
+    pro_cpn_id INT NOT NULL AUTO_INCREMENT,
+    cpn_name VARCHAR(50) NOT NULL,
+    disc_type TINYINT NOT NULL COMMENT '0:滿額折抵,1: 百分比',
+    disc_value DECIMAL(10,2) NOT NULL,
+    min_spend INT,
+    start_date DATE,
+    valid_days INT,
+    cpn_desc VARCHAR(200) COMMENT '折價券規則描述',
+    is_active TINYINT NOT NULL COMMENT '0:未啟用,1:啟用',
+    crt_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
+    appl_scope TINYINT NOT NULL DEFAULT 0 COMMENT '0: 全館, 1: 指定小農, 2: 指定商品',
+   CONSTRAINT  pro_cpn_id_pk PRIMARY KEY (pro_cpn_id)
+) ENGINE=InnoDB;
+
+INSERT INTO pro_cpn  
+(cpn_name, disc_type, disc_value, min_spend, start_date, valid_days, cpn_desc, is_active, appl_scope) 
+VALUES
+-- 1. 滿額折抵券（滿500折100，全館）
+('滿500折100', 0, 100.00, 500, '2025-09-01', NULL, '消費滿500折100元', 1, 0),
+
+-- 2. 百分比折扣券（全館85折，有效期30天）
+('全館85折', 1, 0.85, NULL, NULL, 30, '領後30天內有效', 1, 0),
+
+-- 3. 滿1000折200（全館）
+('滿1000折200', 0, 200.00, 1000, '2025-09-01', NULL, '消費滿1000折200元', 1, 0),
+
+-- 4. 9折券（全館，新品專用）
+('全館9折券', 1, 0.90, NULL, '2025-09-15', 15, '全館適用，限新品', 1, 0),
+
+-- 5. 滿300折50（尚未啟用）
+('滿300折50 (尚未啟用)', 0, 50.00, 300, '2025-10-01', NULL, '活動預備用券', 0, 0),
+
+-- 6. 滿200折20（週末限定）
+('滿200折20', 0, 20.00, 200, '2025-09-05', 7, '週末限定折抵', 1, 0),
+
+-- 7. 全館8折券
+('全館8折券', 1, 0.80, NULL, '2025-09-10', 10, '全館適用，限時8折', 1, 0),
+
+-- 8. 滿1500折300
+('滿1500折300', 0, 300.00, 1500, '2025-09-20', NULL, '全館滿1500折300元', 1, 0),
+
+-- 9. 新客專屬9折券
+('新客專屬9折券', 1, 0.90, NULL, NULL, 14, '新註冊會員14天內使用', 1, 0),
+
+-- 10. 預購商品折100
+('預購折100', 0, 100.00, 600, '2025-09-25', 10, '預購商品專屬折抵', 1, 0);
+
+
 -- 刪除/建立 商品折價卷持有者明細
+DROP TABLE IF EXISTS mem_pro_cpn;
+CREATE TABLE mem_pro_cpn (
+    cpn_holder_detail_id INT NOT NULL AUTO_INCREMENT,
+    pro_cpn_id INT NOT NULL, -- FK
+    mem_id INT NOT NULL,     -- FK
+    cpn_use_status TINYINT NOT NULL COMMENT '0:未使用,1:已使用,2:已過期',
+    crt_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
+    rcv_at DATETIME NOT NULL,
+    eff_start DATE NOT NULL,
+    eff_end DATE,
+    used_at DATETIME,
+    CONSTRAINT cpn_holder_detail_id_pk PRIMARY KEY (cpn_holder_detail_id)
+) ENGINE=InnoDB;
+
+INSERT INTO mem_pro_cpn
+(pro_cpn_id, mem_id, cpn_use_status, rcv_at, eff_start, eff_end, used_at)
+VALUES
+-- 未使用（還在有效期內）
+(1, 1, 0, DATE_SUB(NOW(), INTERVAL 10 DAY), '2025-08-25', '2025-09-25', NULL),
+(2, 2, 0, DATE_SUB(NOW(), INTERVAL 7 DAY), '2025-09-01', '2025-09-30', NULL),
+
+-- 已使用（在有效期內使用過）
+(3, 3, 1, DATE_SUB(NOW(), INTERVAL 15 DAY), '2025-08-20', '2025-09-20', DATE_SUB(NOW(), INTERVAL 3 DAY)),
+(4, 4, 1, DATE_SUB(NOW(), INTERVAL 12 DAY), '2025-08-28', '2025-09-28', DATE_SUB(NOW(), INTERVAL 2 DAY)),
+
+-- 已過期（沒用到）
+(5, 5, 2, DATE_SUB(NOW(), INTERVAL 25 DAY), '2025-07-20', '2025-08-20', NULL),
+(6, 6, 2, DATE_SUB(NOW(), INTERVAL 30 DAY), '2025-07-25', '2025-08-25', NULL),
+
+-- 未使用（剛領，還有效）
+(7, 7, 0, DATE_SUB(NOW(), INTERVAL 3 DAY), '2025-09-05', '2025-09-30', NULL),
+
+-- 已使用（昨天用掉）
+(8, 8, 1, DATE_SUB(NOW(), INTERVAL 5 DAY), '2025-09-01', '2025-09-25', DATE_SUB(NOW(), INTERVAL 1 DAY)),
+
+-- 已過期（有效期已結束，沒使用）
+(9, 9, 2, DATE_SUB(NOW(), INTERVAL 40 DAY), '2025-07-01', '2025-07-31', NULL),
+
+-- 未使用（快到期）
+(10, 10, 0, DATE_SUB(NOW(), INTERVAL 2 DAY), '2025-09-01', '2025-09-10', NULL);
+
+
 -- 刪除/建立 商城訂單
+DROP TABLE IF EXISTS pro_order;
+CREATE TABLE pro_order(
+	pro_ord_id INT NOT NULL AUTO_INCREMENT,
+	mem_id INT NOT NULL, -- FK
+	cpn_holder_detail_id INT, -- FK
+	pro_ord_date DATETIME NOT NULL,
+	pro_ord_status TINYINT NOT NULL default 0,
+	pro_pay_status TINYINT NOT NULL default 0,
+	pro_total INT NOT NULL,
+	pro_ord_ship_fee INT NOT NULL default 0,
+	pro_ord_cpndisc INT NOT NULL default 0,
+	pro_ord_pointdisc INT NOT NULL default 0,
+	pro_ord_pointget INT NOT NULL,
+	pro_ord_grand_total INT NOT NULL,
+	pro_ord_comm VARCHAR(200) DEFAULT NULL,
+	pro_ord_payment TINYINT NOT NULL default 0,
+	pro_ord_shipment TINYINT NOT NULL default 0,
+	pro_tracking_no VARCHAR(30),
+	pro_ord_shipdate DATETIME,
+	CONSTRAINT pro_order_pro_ord_id_pk PRIMARY KEY (pro_ord_id)
+)ENGINE InnoDB;
+
+INSERT INTO pro_order (
+    mem_id, 
+    cpn_holder_detail_id, 
+    pro_ord_date, 
+    pro_ord_status, 
+    pro_pay_status,
+    pro_total, 
+    pro_ord_ship_fee, 
+    pro_ord_cpndisc, 
+    pro_ord_pointdisc,
+    pro_ord_pointget, 
+    pro_ord_grand_total, 
+    pro_ord_comm,
+    pro_ord_payment, 
+    pro_ord_shipment, 
+    pro_tracking_no, 
+    pro_ord_shipdate
+) VALUES
+-- 1. 使用折價券和點數 已付款，已到貨，信用卡+宅配
+(1, 1, '2025-08-30 15:00:00', 3, 1, 1200, 80, 100, 50, FLOOR(1200*0.05), 1200 + 80 - 100 - 50, NULL, 0, 0, 'SF123456789', '2025-09-01 10:00:00'),
+-- 2. 只使用折價券 已付款，出貨中，轉帳+超取
+(2, 2, '2025-08-29 10:30:00', 2, 1, 800, 80, 80, 0, FLOOR(800*0.05), 800 + 80 - 80 - 0, NULL, 1, 1, 'HT987654321', '2025-08-31 15:00:00'),
+-- 3. 只使用點數 已付款，申請退貨，信用卡+宅配
+(3, NULL, '2025-08-28 12:45:00', 4, 1, 1500, 80, 0, 150, FLOOR(1500*0.05), 1500 + 80 - 0 - 150, NULL, 0, 0, 'SF111222333', '2025-08-29 11:00:00'),
+-- 4. 不使用任何折扣 成立訂單，未付款，貨到付款+宅配
+(4, NULL, '2025-08-27 18:00:00', 0, 0, 500, 80, 0, 0, FLOOR(500*0.05), 500 + 80, NULL, 2, 0, NULL, NULL),
+-- 5. 使用折價券和點數 已付款，退貨中，信用卡+超取
+(5, 5, '2025-08-26 20:15:00', 5, 1, 950, 80, 95, 20, FLOOR(950*0.05), 950 + 80 - 95 - 20, NULL, 0, 1, 'HT444555666', '2025-08-27 17:00:00'),
+-- 6. 只使用折價券 已付款，已到貨，轉帳+宅配
+(6, 6, '2025-08-25 09:00:00', 3, 1, 720, 80, 72, 0, FLOOR(720*0.05), 720 + 80 - 72, NULL, 1, 0, 'SF223344556', '2025-08-26 12:00:00'),
+-- 7. 不使用任何折扣 已付款，已退貨，信用卡+超取
+(7, NULL, '2025-08-24 11:00:00', 6, 1, 350, 80, 0, 0, FLOOR(350*0.05), 350 + 80, NULL, 0, 1, 'HT778899001', '2025-08-25 10:00:00'),
+-- 8. 只使用點數 成立訂單，未付款，超商取貨付款+超取
+(8, NULL, '2025-08-23 14:00:00', 0, 0, 2500, 80, 0, 250, FLOOR(2500*0.05), 2500 + 80 - 250, NULL, 3, 1, NULL, NULL),
+-- 9. 使用折價券和點數 已付款，已到貨，信用卡+宅配
+(9, 9, '2025-08-22 16:30:00', 3, 1, 1800, 80, 200, 80, FLOOR(1800*0.05), 1800 + 80 - 200 - 80, NULL, 0, 0, 'HT112233445', '2025-08-23 10:30:00'),
+-- 10. 不使用任何折扣 已付款，出貨中，轉帳+宅配
+(10, NULL, '2025-08-21 17:00:00', 2, 1, 400, 80, 0, 0, FLOOR(400*0.05), 400 + 80, NULL, 1, 0, 'SF334455667', '2025-08-22 13:00:00'),
+-- 11. 只使用折價券 已付款，已到貨，信用卡+超取
+(11, 1, '2025-08-20 18:00:00', 3, 1, 650, 80, 100, 0, FLOOR(650*0.05), 650 + 80 - 100, NULL, 0, 1, 'HT556677889', '2025-08-21 11:00:00'),
+-- 12. 不使用任何折扣 已付款，已到貨，轉帳+超取
+(12, NULL, '2025-08-19 19:30:00', 3, 1, 1000, 80, 0, 0, FLOOR(1000*0.05), 1000 + 80, NULL, 1, 1, 'SF778899001', '2025-08-20 15:00:00'),
+-- 13. 使用折價券和點數 已付款，已到貨，信用卡+宅配
+(13, 2, '2025-08-18 20:00:00', 3, 1, 1100, 80, 80, 100, FLOOR(1100*0.05), 1100 + 80 - 80 - 100, NULL, 0, 0, 'HT990011223', '2025-08-19 14:00:00'),
+-- 14. 只使用折價券 已付款，已到貨，轉帳+宅配
+(14, 3, '2025-08-17 08:00:00', 3, 1, 750, 80, 150, 0, FLOOR(750*0.05), 750 + 80 - 150, NULL, 1, 0, 'SF123123123', '2025-08-18 10:00:00'),
+-- 15. 不使用任何折扣 已付款，已到貨，信用卡+超取
+(15, NULL, '2025-08-16 09:00:00', 3, 1, 200, 80, 0, 0, FLOOR(200*0.05), 200 + 80, NULL, 0, 1, 'HT456456456', '2025-08-17 12:00:00'),
+-- 16. 只使用點數 已付款，已到貨，轉帳+宅配
+(16, NULL, '2025-08-15 10:00:00', 3, 1, 1800, 80, 0, 180, FLOOR(1800*0.05), 1800 + 80 - 180, NULL, 1, 0, 'SF789789789', '2025-08-16 14:00:00'),
+-- 17. 使用折價券和點數 已付款，出貨中，信用卡+宅配
+(17, 4, '2025-08-14 11:00:00', 2, 1, 3000, 80, 250, 200, FLOOR(3000*0.05), 3000 + 80 - 250 - 200, NULL, 0, 0, 'HT111333555', '2025-08-15 11:00:00'),
+-- 18. 不使用任何折扣 已付款，已到貨，信用卡+超取
+(18, NULL, '2025-08-13 12:00:00', 3, 1, 450, 80, 0, 0, FLOOR(450*0.05), 450 + 80, NULL, 0, 1, 'SF222444666', '2025-08-14 15:00:00'),
+-- 19. 只使用折價券 已取消訂單，未出貨，轉帳+宅配
+(19, 5, '2025-08-12 13:00:00', 1, 1, 900, 80, 150, 0, FLOOR(900*0.05), 900 + 80 - 150, NULL, 1, 0, NULL, NULL),
+-- 20. 不使用任何折扣 成立訂單，未付款，貨到付款+超取
+(20, NULL, '2025-08-11 14:00:00', 0, 0, 600, 80, 0, 0, FLOOR(600*0.05), 600 + 80, NULL, 2, 1, NULL, NULL);
+
+
 -- 刪除/建立 商城訂單明細
+DROP TABLE IF EXISTS pro_order_item;
+CREATE TABLE pro_order_item(
+	pro_id INT NOT NULL,	-- PK,FK
+	pro_ord_id INT NOT NULL, -- PK,FK
+	pro_unitprice INT NOT NULL,
+	pro_amount INT NOT NULL DEFAULT 1,
+	pro_subtotal INT NOT NULL,
+	CONSTRAINT pro_order_item_pro_ord_id_pro_ord_id_pk PRIMARY KEY (pro_id,pro_ord_id)
+)ENGINE InnoDB;
+
+INSERT INTO pro_order_item (pro_id, pro_ord_id, pro_unitprice, pro_amount, pro_subtotal) VALUES
+-- pro_ord_id: 1, pro_total: 1200
+(3, 1, 150, 8, 1200),
+-- pro_ord_id: 2, pro_total: 800
+(12, 2, 400, 2, 800),
+-- pro_ord_id: 3, pro_total: 1500
+(7, 3, 500, 3, 1500),
+-- pro_ord_id: 4, pro_total: 500
+(17, 4, 480, 1, 480),
+(18, 4, 65, 1, 65),
+-- pro_ord_id: 5, pro_total: 950
+(11, 5, 450, 2, 900),
+(19, 5, 50, 1, 50),
+-- pro_ord_id: 6, pro_total: 720
+(6, 6, 280, 2, 560),
+(10, 6, 85, 2, 170),
+-- pro_ord_id: 7, pro_total: 350
+(8, 7, 350, 1, 350),
+-- pro_ord_id: 8, pro_total: 2500
+(5, 8, 300, 8, 2400),
+(20, 8, 70, 1, 70),
+(1, 8, 80, 1, 80),
+-- pro_ord_id: 9, pro_total: 1800
+(5, 9, 300, 6, 1800),
+-- pro_ord_id: 10, pro_total: 400
+(12, 10, 400, 1, 400),
+-- pro_ord_id: 11, pro_total: 650
+(9, 11, 220, 2, 440),
+(1, 11, 80, 1, 80),
+(2, 11, 60, 2, 120),
+-- pro_ord_id: 12, pro_total: 1000
+(7, 12, 500, 2, 1000),
+-- pro_ord_id: 13, pro_total: 1100
+(13, 13, 120, 4, 480),
+(15, 13, 90, 5, 450),
+(10, 13, 85, 2, 170),
+-- pro_ord_id: 14, pro_total: 750
+(17, 14, 480, 1, 480),
+(18, 14, 65, 4, 260),
+(4, 14, 45, 1, 45),
+-- pro_ord_id: 15, pro_total: 200
+(13, 15, 120, 1, 120),
+(1, 15, 80, 1, 80),
+-- pro_ord_id: 16, pro_total: 1800
+(5, 16, 300, 6, 1800),
+-- pro_ord_id: 17, pro_total: 3000
+(5, 17, 300, 10, 3000),
+-- pro_ord_id: 18, pro_total: 450
+(11, 18, 450, 1, 450),
+-- pro_ord_id: 19, pro_total: 900
+(15, 19, 90, 10, 900),
+-- pro_ord_id: 20, pro_total: 600
+(2, 20, 60, 10, 600);
+
+
 -- 刪除/建立 購物車
+DROP TABLE IF EXISTS shopping_cart;
+CREATE TABLE shopping_cart(
+	mem_id INT NOT NULL, -- pk.fk
+	pro_id INT NOT NULL, -- pk.fk
+	cart_amount INT NOT NULL DEFAULT 1,
+	CONSTRAINT shopping_cart_mem_id_mem_id_pk PRIMARY KEY (mem_id,pro_id)
+)ENGINE InnoDB;
+
+INSERT INTO shopping_cart (mem_id, pro_id, cart_amount) VALUES
+(12, 5, 2),
+(19, 11, 1),
+(7, 18, 3),
+(3, 2, 4),
+(15, 7, 1),
+(20, 13, 2),
+(9, 4, 1),
+(5, 16, 5),
+(1, 9, 2),
+(14, 10, 3),
+(11, 19, 1),
+(2, 6, 2),
+(18, 12, 1),
+(4, 1, 4),
+(10, 15, 1),
+(16, 8, 2),
+(6, 3, 3),
+(13, 17, 1),
+(8, 20, 2),
+(17, 14, 3),
+(12, 16, 1),
+(1, 18, 2),
+(2, 5, 4),
+(3, 10, 1),
+(4, 12, 2),
+(5, 1, 3),
+(6, 19, 1),
+(7, 8, 2),
+(8, 2, 4),
+(9, 15, 1);
+
+
+
 -- 刪除/建立 檢舉表單
 -- 刪除/建立 商品評論
 -- 刪除/建立 活動折價卷
@@ -468,21 +749,58 @@ INSERT INTO mem (mem_acc, mem_pwd, mem_name, mem_mobile, mem_email, mem_zipcode,
 -- 小農會員 FK 商店樣式編號
 ALTER TABLE f_mem
 ADD CONSTRAINT fmem_styno_fk FOREIGN KEY (sty_no) REFERENCES sty(sty_no);
+
 -- 小農商品 FK 商品類別編號
-ALTER TABLE product
-ADD CONSTRAINT pro_pro_cate_id_fk
-FOREIGN KEY (pro_cate_id) REFERENCES product_category(pro_cate_id);
 -- 小農商品 FK 小農編號
 ALTER TABLE product
-ADD CONSTRAINT pro_f_mem_id_fk
-FOREIGN KEY (f_mem_id) REFERENCES f_mem(f_mem_id);
+ADD CONSTRAINT pro_pro_cate_id_fk FOREIGN KEY (pro_cate_id) REFERENCES product_category(pro_cate_id),
+ADD CONSTRAINT pro_f_mem_id_fk FOREIGN KEY (f_mem_id) REFERENCES f_mem(f_mem_id);
+
 -- 商品圖片 FK 商品編號
 ALTER TABLE product_image
 ADD CONSTRAINT product_image_product_fk FOREIGN KEY (pro_id) REFERENCES product(pro_id);
+
 -- 商城廣告 FK 商品編號
-ALTER TABLE pro_ad
-ADD CONSTRAINT pro_ad_product_FK FOREIGN KEY (pro_id) REFERENCES product(pro_id);
 -- 商城廣告 FK 小農會員編號
 ALTER TABLE pro_ad
+ADD CONSTRAINT pro_ad_product_FK FOREIGN KEY (pro_id) REFERENCES product(pro_id),
 ADD CONSTRAINT pro_ad_f_mem_ID_FK FOREIGN KEY (f_mem_id) REFERENCES f_mem(f_mem_id);
 
+
+-- step 2. FK
+-- (2-1) 一般會員
+-- (2-2) 商品折價卷持有者明細（FK商品折價卷編號）（FK一般會員編號）
+ALTER TABLE mem_pro_cpn
+ADD CONSTRAINT mem_pro_cpn_fk FOREIGN KEY (pro_cpn_id) REFERENCES pro_cpn(pro_cpn_id),
+ADD CONSTRAINT mem_pro_cpn_mem_fk FOREIGN KEY (mem_id) REFERENCES mem(mem_id);
+
+
+-- (2-3) 
+-- 商城訂單（FK一般會員編號）（FK商品折價卷持有者流水號）
+ALTER TABLE pro_order
+ADD CONSTRAINT pro_order_mem_fk FOREIGN KEY (mem_id) REFERENCES mem(mem_id),
+ADD CONSTRAINT pro_order_mem_pro_cpn_fk FOREIGN KEY (cpn_holder_detail_id) REFERENCES mem_pro_cpn(cpn_holder_detail_id);
+-- 商城訂單明細（FK訂單編號）（FK商品編號）
+ALTER TABLE pro_order_item
+ADD CONSTRAINT pro_order_item_product_fk FOREIGN KEY (pro_id) REFERENCES product(pro_id),
+ADD CONSTRAINT pro_order_item_pro_order_fk FOREIGN KEY (pro_ord_id) REFERENCES pro_order(pro_ord_id);
+
+
+-- (2-4) 
+-- 購物車（FK一般會員編號）（FK商品編號）
+ALTER TABLE shopping_cart
+ADD CONSTRAINT shopping_cart_mem_fk FOREIGN KEY (mem_id) REFERENCES mem(mem_id),
+ADD CONSTRAINT shopping_cart_product_fk FOREIGN KEY (pro_id) REFERENCES product(pro_id);
+
+-- 檢舉表單(FK商品編號)
+-- 商品評論（FK商品編號）（FK一般會員編號）
+
+-- (2-5) 活動折價卷
+-- 活動折價卷持有者明細（FK活動折價卷編號）（FK一般會員編號）
+
+-- (2-6) 
+-- 報名訂單（FK場次編號）（FK一般會員編號）（FK活動折價卷持有者流水號）
+
+-- (2-7) 
+-- 商品收藏清單（FK一般會員編號）（FK商品編號） 
+-- 活動收藏清單（FK一般會員編號）（FK活動編號）
