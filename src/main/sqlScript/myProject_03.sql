@@ -61,7 +61,7 @@ CREATE TABLE f_mem (
 	store_pic longblob DEFAULT NULL,
 	store_name varchar(50) DEFAULT NULL,
 	store_intro varchar(500) DEFAULT NULL,
-	sty_no tinyint NOT NULL DEFAULT 1,
+	sty_no tinyint NOT NULL DEFAULT 1, -- FK
 	mkt_score int DEFAULT NULL,
 	mkt_cnt int DEFAULT NULL,
 	act_score int DEFAULT NULL,
@@ -109,68 +109,81 @@ INSERT INTO product_category (PRO_CATE_NAME) VALUES
 -- 刪除/建立 小農商品
 DROP TABLE IF EXISTS product;
 CREATE TABLE product (
-	PRO_ID int NOT NULL AUTO_INCREMENT,
-    PRO_CATE_ID int NOT NULL, -- FK
-    F_MEM_ID int NOT NULL, -- FK
-    PRO_NAME varchar(100) NOT NULL,
-    CONSTRAINT product_PRO_ID_KEY PRIMARY KEY (PRO_ID)
+	pro_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	pro_name VARCHAR(100) NOT NULL,
+	pro_stock INT NOT NULL,
+	pro_price INT NOT NULL,
+	pro_status INT NOT NULL DEFAULT 0,
+	pro_score INT,
+	pro_cnt INT,
+	pro_form VARCHAR(10),
+	f_mem_id INT,   -- FK測試用先放 --
+	pro_cate_id INT  -- FK測試用先放 --
 ) ENGINE InnoDB;
 
-INSERT INTO product (PRO_CATE_ID, F_MEM_ID, PRO_NAME) VALUES
-(1, 1, '有機高麗菜'),    -- 蔬菜
-(1, 2, '小黃瓜'),
-(2, 3, '蘋果'),      -- 水果
-(2, 4, '香蕉'),
-(3, 5, '白米'),      -- 米糧
-(3, 1, '糙米'),
-(4, 2, '高山烏龍茶'),  -- 茶葉
-(4, 3, '大吉嶺紅茶'),
-(5, 4, '乾燥香菇'),    -- 香菇
-(5, 5, '新鮮杏鮑菇'),
-(6, 1, '龍眼蜜'),      -- 蜂蜜
-(6, 2, '荔枝蜜'),
-(7, 3, '放牧雞蛋'),    -- 雞蛋
-(7, 4, '紅心鴨蛋'),
-(8, 5, '夏威夷豆'),    -- 堅果
-(8, 1, '腰果'),
-(9, 2, '玫瑰花束'),    -- 花卉
-(9, 3, '向日葵盆栽'),
-(10, 4, '生食級鮭魚'),   -- 海鮮
-(10, 5, '急速冷凍白蝦');
+INSERT INTO product (pro_name, pro_stock, f_mem_id, pro_price, pro_status, pro_cate_id, pro_score, pro_cnt) VALUES
+('有機高麗菜', 50, 1, 80, 1, 1, 5, 250),
+('無毒小黃瓜', 30, 2, 60, 1, 1, 4, 180),
+('富士蘋果', 120, 3, 150, 1, 2, 5, 300),
+('台灣香蕉', 85, 4, 45, 1, 2, 4, 210),
+('台東池上米', 200, 5, 300, 1, 3, 5, 500),
+('花蓮富里米', 180, 6, 280, 1, 3, 4, 450),
+('高山烏龍茶', 45, 7, 500, 1, 4, 5, 150),
+('金萱紅茶', 60, 8, 350, 1, 4, 4, 120),
+('日曬香菇', 90, 9, 220, 1, 5, 5, 200),
+('新鮮杏鮑菇', 75, 10, 85, 1, 5, 4, 190),
+('龍眼蜜', 110, 1, 450, 1, 6, 5, 100),
+('百花蜜', 95, 2, 400, 1, 6, 4, 90),
+('放牧雞蛋', 250, 3, 120, 1, 7, 5, 350),
+('有機紅蘿蔔', 70, 4, 75, 1, 1, 4, 160),
+('香水鳳梨', 150, 5, 90, 1, 2, 5, 280),
+('有機糙米', 190, 6, 250, 1, 3, 4, 420),
+('文山包種茶', 55, 7, 480, 1, 4, 5, 130),
+('黑木耳', 80, 8, 65, 1, 5, 4, 210),
+('紅心芭樂', 100, 9, 50, 1, 2, 4, 230),
+('在地小番茄', 140, 10, 70, 1, 2, 5, 260);
 
 
 -- 刪除/建立 商品圖片
 DROP TABLE IF EXISTS product_image;
 CREATE TABLE product_image (
-	PRO_IMG_ID int NOT NULL,
-    PRO_ID int NOT NULL, -- FK
-    PRO_IMG LONGBLOB DEFAULT NULL,
-    CONSTRAINT product_image_PRO_IMG_ID_KEY PRIMARY KEY (PRO_IMG_ID)
+	pro_img_id int NOT NULL auto_increment,
+    pro_id int NOT NULL, -- FK
+    pro_img LONGBLOB DEFAULT NULL,
+    CONSTRAINT product_image_pro_img_id_key PRIMARY KEY (pro_img_id)
 ) ENGINE InnoDB;
 
-INSERT INTO product_image (PRO_IMG_ID, PRO_ID, PRO_IMG) VALUES
-(1, 10, NULL),
-(2, 5, NULL),
-(3, 18, NULL),
-(4, 2, NULL),
-(5, 14, NULL),
-(6, 7, NULL),
-(7, 20, NULL),
-(8, 12, NULL),
-(9, 3, NULL),
-(10, 16, NULL),
-(11, 8, NULL),
-(12, 1, NULL),
-(13, 19, NULL),
-(14, 6, NULL),
-(15, 11, NULL),
-(16, 4, NULL),
-(17, 17, NULL),
-(18, 9, NULL),
-(19, 13, NULL),
-(20, 15, NULL);
-
-
+INSERT INTO product_image (pro_id, pro_img) VALUES
+(1, NULL),
+(2, NULL),
+(3, NULL),
+(4, NULL),
+(5, NULL),
+(6, NULL),
+(7, NULL),
+(8, NULL),
+(9, NULL),
+(10, NULL),
+(11, NULL),
+(12, NULL),
+(13, NULL),
+(14, NULL),
+(15, NULL),
+(16, NULL),
+(17, NULL),
+(18, NULL),
+(19, NULL),
+(20, NULL),
+(1, NULL),
+(5, NULL),
+(8, NULL),
+(15, NULL),
+(2, NULL),
+(10, NULL),
+(4, NULL),
+(12, NULL),
+(7, NULL),
+(19, NULL);
 
 -- 刪除/建立 商城廣告
 DROP TABLE IF EXISTS pro_ad;
@@ -219,11 +232,137 @@ INSERT INTO pro_ad (
 
 
 -- 刪除/建立 活動分類
+drop table if exists actcate;
+create table actcate (
+ actcate_id			int not null auto_increment,
+ actcate_name		varchar(10),
+ constraint actcate_actcate_id_pk primary key (actcate_id));
+
+insert into actcate values (1,'農事體驗'), (2,'食農教育'), (3,'親子同樂'), (4,'動物互動'), (5, '手作工藝'),
+						   (6,'戶外體驗'), (7,'導覽活動'), (8,'季節限定'), (9,'其它');
+
+
+
 -- 刪除/建立 活動
+drop table if exists act;
+create table act (
+ act_id				int not null auto_increment,
+ act_name			varchar(30) not null,
+ act_start			date,
+ act_end			date,
+ act_des			varchar(1000),
+ act_fee			int not null,
+ act_revstat		tinyint default 0,
+ act_revupd			datetime not null,
+ act_revremark		varchar(1000),
+ act_launstat		tinyint,
+ act_launupd		datetime,
+ f_mem_id			int not null,
+ act_score			int,
+ act_cnt			int,
+ constraint act_f_mem_id_fk foreign key (f_mem_id) references f_mem (f_mem_id),
+ constraint act_act_id_pk primary key (act_id));
+
+insert into act values
+  /*到目前都正常上架&有人評價過*/
+ (null, '下田去！一日小農體驗', '2025-07-01','2025-12-30',
+ '捲起袖子、赤腳踩在田裡，親手插秧、採收蔬果，感受最真實的農村日常。',
+ 200, 2, '2025-05-10 10:20:30', null, 1, '2025-05-15 09:20:30', 1, 101, 23),
+ 
+ /*審核未過*/
+ (null, '從產地到餐桌的秘密', '2025-10-25','2026-03-31',
+ '透過遊戲與教學，讓大小朋友了解食材來源，培養珍惜食物的心。',
+ 10000, 3, '2025-08-26 08:20:00', '報名費用有疑慮，請再次確認。', null, null, 3, null, null),
+ 
+ /*到目前都正常上架&有人評價過*/
+ (null, '小小牧場', '2025-03-15','2025-10-31',
+ '餵小羊、抱兔子，近距離接觸可愛動物，體驗牧場生活樂趣。',
+ 399, 2, '2025-01-10 14:10:30', null, 1, '2025-01-15 16:00:30', 2, 168, 38),
+ 
+ /*有人評價過此活動, 此活動已結束並下架*/
+ (null, '藍染工藝體驗課程', '2024-12-01','2025-06-10',
+ '親手體驗藍染工藝，學習天然染色技巧，創作獨一無二的布藝作品。',
+ 700, 2, '2024-10-27 19:10:30', '已修正金額，審核通過', 0, '2025-06-11 00:00:00', 2, 666, 150),
+ 
+ /*審核已通過但還沒上架*/
+ (null, '小村莊的故事之旅', '2025-10-01','2026-02-28',
+ '在導覽老師帶領下，認識農村的歷史、風俗與文化典故。',
+ 299, 2, '2025-08-28 10:20:30', null, 0, null, 1, null, null);
+
+
+
 -- 刪除/建立 活動分類明細
+drop table if exists actcate_list;
+create table actcate_list (
+ act_id				int	not null,
+ actcate_id			int not null,
+ constraint actcate_list_act_id_fk foreign key (act_id) references act (act_id),
+ constraint actcate_list_actcate_id_fk foreign key (actcate_id) references actcate (actcate_id),
+ constraint actcate_list_act_id_actcate_id_pk primary key (act_id, actcate_id));
+ 
+ insert into actcate_list values (1, 1), (1, 3), (1, 6),
+								 (2, 2), (2, 3),
+                                 (3, 3), (3, 4), (3, 6), (3, 7),
+                                 (4, 3), (4, 5),
+                                 (5, 3), (5, 6), (5, 7);
+                                 
+                                 
 -- 刪除/建立 活動照片
--- 刪除/建立 活動廣告
+drop table if exists actimg;
+create table actimg (
+ actimg_id			int not null auto_increment,
+ act_img			longblob,
+ act_id				int not null,
+ constraint actimg_act_id_fk foreign key (act_id) references act (act_id),
+ constraint actimg_actimg_id_pk primary key (actimg_id));
+
+insert into actimg values (null, null, 1), (null, null, 1), (null, null, 1),
+						  (null, null, 3), (null, null, 3);
+                          
+                          
 -- 刪除/建立 場次
+drop table if exists ses;
+create table ses (
+ ses_id				int not null auto_increment,
+ ses_date			date not null,
+ ses_start			time not null,
+ ses_end			time not null,
+ reg_start			date not null,
+ reg_end			date not null,
+ minppl				int not null default 1,
+ maxppl				int not null,
+ ses_fee			int not null,
+ notice				int not null default 1,
+ ses_launstat		tinyint not null default 0,
+ ses_launupd		datetime,
+ reg_stat			tinyint not null default 0,
+ headcount			int default 0,
+ act_id				int not null,
+ constraint ses_act_id_fk foreign key (act_id) references act (act_id),
+ constraint ses_ses_id_pk primary key (ses_id));																									/* 0現正報名中 1成團 2不成團.取消*/
+																																/* 0下 1上*/	    /* 3場次異動.需再確認是否成團 4取消場次 5場次已圓滿結束 6結案 */		
+                    /* (場次id, 場次date, 開始時間, 結束時間, 開始報名date, 報名截止(確認是否成團)date, 人數下限, 人數上限, 報名費, 行前通知, 場次狀態, 場次狀態更新時間, 報名狀態, 報名人數, 活動id)*/
+						/*目前是1.3.4有上架過可以寫場次, 4只能寫已結束的*/
+ 
+ 					   /*圓滿結束*/
+insert into ses values (null, '2025-08-08', '15:00', '17:30', '2025-07-01', '2025-08-01',  5, 20, 230, 3, 0, '2025-08-08 17:30:00', 5, 18, 1),
+					   /*還在報名中...這邊我有修改上架狀態更新時間&修正場次狀態*/
+					   (null, '2025-10-10', '14:00', '16:30', '2025-08-25', '2025-10-01',  5, 20, 200, 3, 1, '2025-08-11 14:10:09', 0, 10, 1),
+                       /*不成團, 取消...這邊我有修改上架狀態跟人數 (確定取消的話人數應要歸0? 這樣後台才不會用金額成以人數結果撥款過來? 是不是應該要以場次算啊) */
+                       (null, '2025-03-20', '10:30', '11:30', '2025-01-20', '2025-03-10',  5, 15, 399, 2, 0, '2025-03-10 00:00:00', 2, 0, 3),
+					   /* 場次有異動, 還未確認是否成團*/                       
+                       (null, '2025-10-05', '15:00', '16:00', '2025-08-10', '2025-09-20',  5, 15, 449, 2, 1, '2025-08-05 00:00:00', 3, 4, 3),
+                       /* 場次取消 (10/7有地震導致部分設施要維修、直接取消) */
+                       (null, '2025-10-10', '16:30', '17:30', '2025-08-25', '2025-10-01', 10, 20, 499, 3, 0, '2025-10-07 00:00:00', 4, 0, 3),
+                       /* 結案 */
+                       (null, '2025-06-05', '14:00', '16:30', '2025-04-25', '2025-05-25', 15, 30, 700, 3, 1, '2025-06-30 00:00:00', 6, 25, 4),
+                       /* 成團, 活動尚未進行 */
+                       (null, '2025-09-10', '14:00', '16:30', '2025-07-20', '2025-09-01',  5, 15, 200, 3, 1, '2025-09-01 00:00:00', 1, 11, 1);
+
+
+
+
+-- 刪除/建立 活動廣告
 
 
 
@@ -331,17 +470,19 @@ ALTER TABLE f_mem
 ADD CONSTRAINT fmem_styno_fk FOREIGN KEY (sty_no) REFERENCES sty(sty_no);
 -- 小農商品 FK 商品類別編號
 ALTER TABLE product
-ADD CONSTRAINT product_product_category_FK FOREIGN KEY (PRO_CATE_ID) REFERENCES product_category(PRO_CATE_ID);
+ADD CONSTRAINT pro_pro_cate_id_fk
+FOREIGN KEY (pro_cate_id) REFERENCES product_category(pro_cate_id);
 -- 小農商品 FK 小農編號
 ALTER TABLE product
-ADD CONSTRAINT product_f_men_FK FOREIGN KEY (F_MEM_ID) REFERENCES f_mem(F_MEM_ID);
+ADD CONSTRAINT pro_f_mem_id_fk
+FOREIGN KEY (f_mem_id) REFERENCES f_mem(f_mem_id);
 -- 商品圖片 FK 商品編號
 ALTER TABLE product_image
-ADD CONSTRAINT product_image_product_FK FOREIGN KEY (PRO_ID) REFERENCES product(PRO_ID);
+ADD CONSTRAINT product_image_product_fk FOREIGN KEY (pro_id) REFERENCES product(pro_id);
 -- 商城廣告 FK 商品編號
 ALTER TABLE pro_ad
-ADD CONSTRAINT pro_ad_product_FK FOREIGN KEY (PRO_ID) REFERENCES product(PRO_ID);
+ADD CONSTRAINT pro_ad_product_FK FOREIGN KEY (pro_id) REFERENCES product(pro_id);
 -- 商城廣告 FK 小農會員編號
 ALTER TABLE pro_ad
-ADD CONSTRAINT pro_ad_f_mem_ID_FK FOREIGN KEY (F_MEM_ID) REFERENCES f_mem(F_MEM_ID);
+ADD CONSTRAINT pro_ad_f_mem_ID_FK FOREIGN KEY (f_mem_id) REFERENCES f_mem(f_mem_id);
 
