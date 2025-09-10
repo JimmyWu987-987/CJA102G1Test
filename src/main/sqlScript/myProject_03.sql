@@ -116,7 +116,7 @@ CREATE TABLE product (
 	pro_status INT NOT NULL DEFAULT 0,
 	pro_score INT,
 	pro_cnt INT,
-	pro_form VARCHAR(10),
+	pro_from VARCHAR(10),
 	f_mem_id INT,   -- FK測試用先放 --
 	pro_cate_id INT  -- FK測試用先放 --
 ) ENGINE InnoDB;
