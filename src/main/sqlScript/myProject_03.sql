@@ -117,11 +117,11 @@ CREATE TABLE product (
 	pro_score INT,
 	pro_cnt INT,
 	pro_from VARCHAR(10),
-	f_mem_id INT,   -- FK測試用先放 --
+	fmem_id INT,   -- FK測試用先放 --
 	pro_cate_id INT  -- FK測試用先放 --
 ) ENGINE InnoDB;
 
-INSERT INTO product (pro_name, pro_stock, f_mem_id, pro_price, pro_status, pro_cate_id, pro_score, pro_cnt) VALUES
+INSERT INTO product (pro_name, pro_stock, fmem_id, pro_price, pro_status, pro_cate_id, pro_score, pro_cnt) VALUES
 ('有機高麗菜', 50, 1, 80, 1, 1, 5, 250),
 ('無毒小黃瓜', 30, 2, 60, 1, 1, 4, 180),
 ('富士蘋果', 120, 3, 150, 1, 2, 5, 300),
@@ -190,7 +190,7 @@ DROP TABLE IF EXISTS pro_ad;
 CREATE TABLE pro_ad (
 	pro_ad_revid int NOT NULL AUTO_INCREMENT,
     pro_id int NOT NULL, -- FK
-    f_mem_id int NOT NULL, -- FK
+    fmem_id int NOT NULL, -- FK
     pro_ad_img longblob,
     pro_ad_revstat tinyint,
     pro_ad_revupd datetime,
@@ -207,7 +207,7 @@ CREATE TABLE pro_ad (
 
 INSERT INTO pro_ad (
 	pro_id,
-	f_mem_id,
+	fmem_id,
 	pro_ad_img,
 	pro_ad_revstat,
 	pro_ad_revupd,
@@ -257,10 +257,10 @@ create table act (
  act_revremark		varchar(1000),
  act_launstat		tinyint,
  act_launupd		datetime,
- f_mem_id			int not null,
+ fmem_id			int not null,
  act_score			int,
  act_cnt			int,
- constraint act_fmem_id_fk foreign key (f_mem_id) references fmem (fmem_id),
+ constraint act_fmem_id_fk foreign key (fmem_id) references fmem (fmem_id),
  constraint act_act_id_pk primary key (act_id));
 
 insert into act values
@@ -837,7 +837,7 @@ ADD CONSTRAINT fmem_styno_fk FOREIGN KEY (sty_no) REFERENCES sty(sty_no);
 -- 小農商品 FK 小農編號
 ALTER TABLE product
 ADD CONSTRAINT pro_pro_cate_id_fk FOREIGN KEY (pro_cate_id) REFERENCES product_category(pro_cate_id),
-ADD CONSTRAINT pro_f_mem_id_fk FOREIGN KEY (f_mem_id) REFERENCES fmem(fmem_id);
+ADD CONSTRAINT pro_fmem_id_fk FOREIGN KEY (fmem_id) REFERENCES fmem(fmem_id);
 
 -- 商品圖片 FK 商品編號
 ALTER TABLE product_image
@@ -847,7 +847,7 @@ ADD CONSTRAINT product_image_product_fk FOREIGN KEY (pro_id) REFERENCES product(
 -- 商城廣告 FK 小農會員編號
 ALTER TABLE pro_ad
 ADD CONSTRAINT pro_ad_product_FK FOREIGN KEY (pro_id) REFERENCES product(pro_id),
-ADD CONSTRAINT pro_ad_f_mem_ID_FK FOREIGN KEY (f_mem_id) REFERENCES fmem(fmem_id);
+ADD CONSTRAINT pro_ad_fmem_ID_FK FOREIGN KEY (fmem_id) REFERENCES fmem(fmem_id);
 
 
 -- step 2. FK
